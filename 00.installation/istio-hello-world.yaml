@@ -1,0 +1,108 @@
+---
+apiVersion: maistra.io/v1
+kind: ServiceMeshMember
+metadata:
+  name: default
+spec:
+  controlPlaneRef:
+    name: basic
+    namespace: istio-system
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - hello-world
+  http:
+  - match:
+    - uri:
+        prefix: /hello-world
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: hello-world
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+data:
+  index.html: "Hello World!"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: hello-world
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      serviceAccountName: hello-world
+      containers:
+        - name: hello-world
+          image: bitnami/apache:latest
+          volumeMounts:
+            - name: hello-world
+              mountPath: /app/
+      volumes:
+        - name: hello-world
+          configMap:
+            name: hello-world
