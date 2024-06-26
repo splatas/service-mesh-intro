@@ -81,13 +81,13 @@ From the Operators → Installed Operators page, scroll or type a keyword into t
 On the Operator Details page, select Uninstall Operator from the Actions menu. Follow the prompts to uninstall each Operator.
 
 - Red Hat OpenShift Service Mesh
-1. Borrar la subscription: **oc get subscription -A** (para buscar todas las subscriciones)
+1. Delete the subscription: **oc get subscription -A** (to find all subscriptions)
 ```
 $ oc delete subscription servicemeshoperator -n openshift-operators
 OUTPUT: subscription.operators.coreos.com "servicemeshoperator" deleted
 ```
-2. Borrar la ClusterServiceVersion (CSV):
-Para buscarlo: oc get clusterserviceversion -n openshift-operators
+2. Delete the ClusterServiceVersion (CSV):
+To find it: oc get clusterserviceversion -n openshift-operators
 
 ```
 $ oc get clusterserviceversion -n openshift-operators
