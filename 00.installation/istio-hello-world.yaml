@@ -39,7 +39,12 @@ spec:
   http:
   - match:
     - uri:
+        # WARNING: if you have another VirtualService with similar uri's prefix
+        # you should replace it with 'exact' to avoid 'lost' of traffic. 
+        # Example: if you have another prefix '/hello-world-SOMETHING', all traffic will be 'catched'
+        # by this 'prefix' (/hello-world) because it matches firstly. 
         prefix: /hello-world
+        #exact: /hello-world
     rewrite:
       uri: /
     route:

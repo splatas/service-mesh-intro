@@ -1,0 +1,973 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: "[\n  {\n    \"apiVersion\": \"maistra.io/v2\",\n    \"kind\": \"ServiceMeshControlPlane\",\n
+      \   \"metadata\": {\n      \"name\": \"basic\",\n      \"namespace\": \"control-plane-namespace\"\n
+      \   },\n    \"spec\": {\n      \"version\": \"v2.4\",\n      \"tracing\": {\n
+      \       \"type\": \"Jaeger\",\n        \"sampling\": 10000\n      },\n      \"policy\":
+      {\n         \"type\": \"Istiod\"\n      },\n      \"telemetry\": {\n         \"type\":
+      \"Istiod\"\n      },\n      \"addons\": {\n        \"jaeger\": {\n          \"install\":
+      {\n            \"storage\": {\n              \"type\": \"Memory\"\n            }\n
+      \         }\n        },\n        \"prometheus\": {\n          \"enabled\": true\n
+      \       },\n        \"kiali\": {\n          \"enabled\": true\n        },\n
+      \       \"grafana\": {\n          \"enabled\": true\n        }\n      }\n    }\n
+      \ },\n  {\n    \"apiVersion\": \"maistra.io/v1\",\n    \"kind\": \"ServiceMeshMemberRoll\",\n
+      \   \"metadata\": {\n      \"name\": \"default\",\n      \"namespace\": \"control-plane-namespace\"\n
+      \   },\n    \"spec\": {\n      \"members\": [\n        \"your-project\",\n        \"another-of-your-projects\"
+      \n      ]\n    }\n  },\n  {\n    \"apiVersion\": \"maistra.io/v1\",\n    \"kind\":
+      \"ServiceMeshMember\",\n    \"metadata\": {\n      \"name\": \"default\",\n
+      \     \"namespace\": \"application-namespace\"\n    },\n    \"spec\": {\n      \"controlPlaneRef\":
+      {\n        \"name\": \"basic\",\n        \"namespace\": \"control-plane-namespace\"\n
+      \     }\n    }\n  }\n]"
+    capabilities: Seamless Upgrades
+    categories: OpenShift Optional, Integration & Delivery
+    certified: "false"
+    containerImage: registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:c9d21744d10e885f81d68d4cefd362d55cce3dfa49ffcfd9379ceb14957c0b8d
+    createdAt: 2023-10-17T08:58:28EDT
+    description: The OpenShift Service Mesh Operator enables you to install, configure,
+      and manage an instance of Red Hat OpenShift Service Mesh. OpenShift Service
+      Mesh is based on the open source Istio project.
+    olm.operatorGroup: global-operators
+    olm.operatorNamespace: openshift-operators
+    olm.skipRange: '>=1.0.2 <2.4.4-0'
+    operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"maistra.io","kind":"ServiceMeshControlPlane","version":"v1"}},{"type":"olm.gvk","value":{"group":"maistra.io","kind":"ServiceMeshControlPlane","version":"v2"}},{"type":"olm.gvk","value":{"group":"maistra.io","kind":"ServiceMeshMember","version":"v1"}},{"type":"olm.gvk","value":{"group":"maistra.io","kind":"ServiceMeshMemberRoll","version":"v1"}},{"type":"olm.package","value":{"packageName":"servicemeshoperator","version":"2.4.4-0"}}]}'
+    operators.openshift.io/infrastructure-features: '["Disconnected","fips"]'
+    operators.openshift.io/valid-subscription: '["OpenShift Container Platform", "OpenShift
+      Platform Plus"]'
+    repository: https://github.com/maistra/istio-operator
+    support: Red Hat, Inc.
+  creationTimestamp: "2024-06-26T15:46:48Z"
+  generation: 1
+  labels:
+    olm.copiedFrom: openshift-operators
+    olm.managed: "true"
+    operatorframework.io/arch.amd64: supported
+    operatorframework.io/arch.arm64: supported
+    operatorframework.io/arch.ppc64le: supported
+    operatorframework.io/arch.s390x: supported
+  name: servicemeshoperator.v2.4.4
+  namespace: istio-system
+  resourceVersion: "184530"
+  uid: b35232df-e759-46e4-8773-dc7d44a5734c
+spec:
+  apiservicedefinitions: {}
+  cleanup:
+    enabled: false
+  customresourcedefinitions:
+    owned:
+    - description: An Istio control plane installation
+      displayName: Istio Service Mesh Control Plane
+      kind: ServiceMeshControlPlane
+      name: servicemeshcontrolplanes.maistra.io
+      specDescriptors:
+      - description: Specify the version of the control plane you want to install
+        displayName: Control Plane Version
+        path: version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:General
+        - urn:alm:descriptor:com.tectonic.ui:select:v2.4
+        - urn:alm:descriptor:com.tectonic.ui:select:v2.3
+        - urn:alm:descriptor:com.tectonic.ui:select:v2.2
+      - description: 'NOTE: only applies if version is v2.4 or higher'
+        displayName: Control Plane Mode
+        path: mode
+      - description: Enable mTLS for communication between control plane components
+        displayName: Control Plane Security
+        path: security.controlPlane.mtls
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:General
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set to true to install Prometheus
+        displayName: Install Prometheus
+        path: addons.prometheus.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:metrics
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Enable mTLS for communcation between services in the mesh
+        displayName: Data Plane Security
+        path: security.dataPlane.mtls
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:General
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set to true to install Kiali
+        displayName: Install Kiali
+        path: addons.kiali.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:visualization
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Set to true to install Grafana
+        displayName: Install Grafana
+        path: addons.grafana.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:visualization
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Select the provider to use for tracing
+        displayName: Tracing provider
+        path: tracing.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:tracing
+        - urn:alm:descriptor:com.tectonic.ui:select:None
+        - urn:alm:descriptor:com.tectonic.ui:select:Jaeger
+        - urn:alm:descriptor:com.tectonic.ui:select:Stackdriver
+      - description: Set storage type for Jaeger (applies only when Jaeger is selected
+          as the tracing provider)
+        displayName: Jaeger Storage Type
+        path: addons.jaeger.install.storage.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:tracing
+        - urn:alm:descriptor:com.tectonic.ui:select:Memory
+        - urn:alm:descriptor:com.tectonic.ui:select:Elasticsearch
+      - description: Select "Mixer" when deploying a control plane version less than
+          "v2.0" or when planning to install 3scale adapter
+        displayName: Type of Policy
+        path: policy.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Policy
+        - urn:alm:descriptor:com.tectonic.ui:select:Istiod
+        - urn:alm:descriptor:com.tectonic.ui:select:Mixer
+      - description: Set to true to install the Istio 3Scale adapter (applies only
+          when Policy type is set to Mixer)
+        displayName: Install 3Scale Adapter
+        path: addons.3scale.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Policy
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Select "Mixer" when deploying a control plane version less than
+          "v2.0"
+        displayName: Type of Telemetry
+        path: telemetry.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Telemetry
+        - urn:alm:descriptor:com.tectonic.ui:select:Istiod
+        - urn:alm:descriptor:com.tectonic.ui:select:Mixer
+      - description: Set the default compute resource requests and limits for control
+          plane components
+        displayName: Default Resource Requirements
+        path: runtime.defaults.container.resources
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      statusDescriptors:
+      - description: Status of components deployed by this ServiceMeshControlPlane
+          resource
+        displayName: Components
+        path: readiness.components
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podStatuses
+      version: v2
+    - description: Marks the containing namespace as a member of the referenced Service
+        Mesh
+      displayName: Istio Service Mesh Member
+      kind: ServiceMeshMember
+      name: servicemeshmembers.maistra.io
+      specDescriptors:
+      - description: The namespace of the ServiceMeshControlPlane to which this namespace
+          belongs
+        displayName: Namespace
+        path: controlPlaneRef.namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Service_Mesh_Control_Plane
+        - urn:alm:descriptor:io.kubernetes:Project
+      - description: The name of the ServiceMeshControlPlane to which this namespace
+          belongs
+        displayName: Name
+        path: controlPlaneRef.name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldGroup:Service_Mesh_Control_Plane
+        - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1
+    - description: A list of namespaces in Service Mesh
+      displayName: Istio Service Mesh Member Roll
+      kind: ServiceMeshMemberRoll
+      name: servicemeshmemberrolls.maistra.io
+      version: v1
+  description: |-
+    Red Hat OpenShift Service Mesh is a platform that provides behavioral insight and operational control over a service mesh, providing a uniform way to connect, secure, and monitor microservice applications.
+
+    ### Overview
+
+    Red Hat OpenShift Service Mesh, based on the open source [Istio](https://istio.io/) project, adds a transparent layer on existing
+    distributed applications without requiring any changes to the service code. You add Red Hat OpenShift Service Mesh
+    support to services by deploying a special sidecar proxy throughout your environment that intercepts all network
+    communication between microservices. You configure and manage the service mesh using the control plane features.
+
+    Red Hat OpenShift Service Mesh provides an easy way to create a network of deployed services that provides discovery,
+    load balancing, service-to-service authentication, failure recovery, metrics, and monitoring. A service mesh also
+    provides more complex operational functionality, including A/B testing, canary releases, rate limiting, access
+    control, and end-to-end authentication.
+
+    ### Core Capabilities
+
+    Red Hat OpenShift Service Mesh supports uniform application of a number of key capabilities across a network of services:
+
+    + **Traffic Management** - Control the flow of traffic and API calls between services, make calls more reliable,
+      and make the network more robust in the face of adverse conditions.
+
+    + **Service Identity and Security** - Provide services in the mesh with a verifiable identity and provide the
+      ability to protect service traffic as it flows over networks of varying degrees of trustworthiness.
+
+    + **Policy Enforcement** - Apply organizational policy to the interaction between services, ensure access policies
+      are enforced and resources are fairly distributed among consumers. Policy changes are made by configuring the
+      mesh, not by changing application code.
+
+    + **Telemetry** - Gain understanding of the dependencies between services and the nature and flow of traffic between
+      them, providing the ability to quickly identify issues.
+
+    ### Joining Projects Into a Mesh
+
+    Once an instance of Red Hat OpenShift Service Mesh has been installed, it will only exercise control over services within its own
+    project.  Other projects may be added into the mesh using one of two methods:
+
+    1. A **ServiceMeshMember** resource may be created in other projects to add those projects into the mesh.  The
+      **ServiceMeshMember** specifies a reference to the **ServiceMeshControlPlane** object that was used to install
+      the control plane.  The user creating the **ServiceMeshMember** resource must have permission to *use* the
+      **ServiceMeshControlPlane** object.  The adminstrator for the project containing the control plane can grant
+      individual users or groups the *use* permissions.
+
+    2. A **ServiceMeshMemberRoll** resource may be created in the project containing the control plane.  This resource
+      contains a single *members* list of all the projects that should belong in the mesh.  The resource must be named
+      *default*.  The user creating the resource must have *edit* or *admin* permissions for all projects in the
+      *members* list.
+
+    ### More Information
+
+    * [Documentation](https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html)
+    * [Bugs](https://issues.redhat.com/projects/OSSM)
+  displayName: Red Hat OpenShift Service Mesh
+  icon:
+  - base64data: |-
+      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
+      ylLtXP0/aeQGS1ZSYNsAAAAASUVORK5CYII=
+    mediatype: image/png
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - services/finalizers
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - endpoints
+          - namespaces
+          - persistentvolumeclaims
+          - pods
+          - replicationcontrollers
+          - secrets
+          - serviceaccounts
+          - services
+          - events
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          - extensions
+          resources:
+          - daemonsets
+          - deployments
+          - deployments/finalizers
+          - ingresses
+          - ingresses/status
+          - replicasets
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - autoscaling
+          resources:
+          - horizontalpodautoscalers
+          verbs:
+          - '*'
+        - apiGroups:
+          - policy
+          resources:
+          - poddisruptionbudgets
+          verbs:
+          - '*'
+        - apiGroups:
+          - admissionregistration.k8s.io
+          resources:
+          - mutatingwebhookconfigurations
+          - validatingwebhookconfigurations
+          verbs:
+          - '*'
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - '*'
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - clusterissuers
+          verbs:
+          - '*'
+        - apiGroups:
+          - networking.k8s.io
+          resources:
+          - networkpolicies
+          - ingresses
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          - clusterroles
+          - rolebindings
+          - roles
+          verbs:
+          - '*'
+        - apiGroups:
+          - authentication.istio.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - config.istio.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - networking.istio.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.istio.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - security.istio.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - jaegertracing.io
+          resources:
+          - jaegers
+          verbs:
+          - '*'
+        - apiGroups:
+          - kiali.io
+          resources:
+          - kialis
+          verbs:
+          - '*'
+        - apiGroups:
+          - maistra.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - authentication.maistra.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.maistra.io
+          resources:
+          - '*'
+          verbs:
+          - '*'
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          - routes/custom-host
+          verbs:
+          - '*'
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        - apiGroups:
+          - network.openshift.io
+          resources:
+          - clusternetworks
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - config.openshift.io
+          resources:
+          - networks
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - image.openshift.io
+          resources:
+          - imagestreams
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - network.openshift.io
+          resources:
+          - netnamespaces
+          verbs:
+          - get
+          - list
+          - watch
+          - update
+        - apiGroups:
+          - k8s.cni.cncf.io
+          resources:
+          - network-attachment-definitions
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - privileged
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+        - apiGroups:
+          - ""
+          resources:
+          - nodes
+          - nodes/proxy
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        serviceAccountName: istio-operator
+      deployments:
+      - name: istio-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: istio-operator
+          strategy:
+            type: Recreate
+          template:
+            metadata:
+              annotations:
+                oauth-proxy.name: oauth-proxy
+                oauth-proxy.namespace: openshift
+                oauth-proxy.query: "true"
+                oauth-proxy.tag: v4.4
+                olm.relatedImage.v2_1.cni: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a9b51d0da38a7ae0423e74c4ed0c1dcc8140770ca34075944d73dea180f95418
+                olm.relatedImage.v2_1.grafana: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:63cd675267e90bb02e13e57ce1b1ff3b3a21831281e1a6ecf3ad51cfe161c02c
+                olm.relatedImage.v2_1.pilot: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:b2a7d16998e501bac06b0f9cac94999a795be31895163e88423638ea1f638435
+                olm.relatedImage.v2_1.prometheus: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:841f8bad415843f9a579f509b8a4c2ed0f4fb56f1cea2a6b5b8704900761a42f
+                olm.relatedImage.v2_1.proxyv2: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:a9cb8adc2edfd4a42b64d2041ee58b1fd0068af0cd8cbbb0ef36a032725fd9c8
+                olm.relatedImage.v2_1.rls: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:f2c395c94dd63ab1aced5b1e3a220bc16326b0f516af933c30db57024cea2d7d
+                olm.relatedImage.v2_1.wasm-cacher: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:b2a7d16998e501bac06b0f9cac94999a795be31895163e88423638ea1f638435
+                olm.relatedImage.v2_2.cni: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:606a5220d69040694f0183cc1bf760b61286f863a311ff2b773e8053d634ee3a
+                olm.relatedImage.v2_2.grafana: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:aeb202fe0e8a96edcf6c4ca47173c4df1ddc4016c579257403233c839710d8e2
+                olm.relatedImage.v2_2.pilot: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:565cd711b5f42075dd0dcc5fa65064c2f89d479dfe51dc3c4b71d86e37c59e78
+                olm.relatedImage.v2_2.prometheus: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:9edbb41786c9981386e06df0a415c848064bbaaadf3ebff4c1258b9854e43a39
+                olm.relatedImage.v2_2.proxyv2: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:c37b6b7a6a08cfdf915ab9c498786df5f77ba633496ba9b8a702aeee2cdb51ab
+                olm.relatedImage.v2_2.rls: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:996a71d56ed9a699816aed9281143df0ec45f22199c35d6f860c24e82f89ed3d
+                olm.relatedImage.v2_2.wasm-cacher: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:565cd711b5f42075dd0dcc5fa65064c2f89d479dfe51dc3c4b71d86e37c59e78
+                olm.relatedImage.v2_3.cni: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:ad1285ba536c602b8ee2f6e6c2aac49f2d9cfba2d3956ea10383e27024be7703
+                olm.relatedImage.v2_3.grafana: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:7e76a2f7de543e260e94ae9396cfb55ed57ab4338d1b36db867b0760ce74acfd
+                olm.relatedImage.v2_3.pilot: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:f2fd8d5d4f5cce58723b644c3d2dbb0bfe5547c8c830809497df19223912ea69
+                olm.relatedImage.v2_3.prometheus: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:e4ce6de68835fa9426d42c05f45874300cb9bdb5c9e4a129dece52fa4c207317
+                olm.relatedImage.v2_3.proxyv2: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:611d31a75558224131607e381db18e59d0d15263a817d056c891960c49476879
+                olm.relatedImage.v2_3.rls: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:186e2b8bcf97c22f82ca72e1a19057757ec4981f3dff0e61e2b61451fab86535
+                olm.relatedImage.v2_3.wasm-cacher: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:f2fd8d5d4f5cce58723b644c3d2dbb0bfe5547c8c830809497df19223912ea69
+                olm.relatedImage.v2_4.cni: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:b1b6b861aba9ab9aae070aa7653ea9d185096636916ad24b20da0417d6cd14d4
+                olm.relatedImage.v2_4.grafana: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:b76c4d5b4cdfa1ccf323134733171f248446b2bd38d4be09e35c606b832efb56
+                olm.relatedImage.v2_4.pilot: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:affc93ad246c9d4c771df6b21e102cbaa51c76b458f1d1b8d6efcfabbda847b4
+                olm.relatedImage.v2_4.prometheus: registry.redhat.io/openshift4/ose-prometheus@sha256:9316d9318a4e1e8163e6890c7ee8734a7a918ac0cfb99dda4a8b6ba0213c2f6d
+                olm.relatedImage.v2_4.prometheus-config-reloader: registry.redhat.io/openshift4/ose-prometheus-config-reloader@sha256:ef50efa59c7a4d81bd88d07f9e2236ce931dfdff92efd045f465a8fa358d6ffb
+                olm.relatedImage.v2_4.proxyv2: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:d03f2bf8f5e7cba47102ba26ea0149ae6719076c645d5e451058392d6044b738
+                olm.relatedImage.v2_4.rls: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:b27c5f61b22e57642b5e45c7acb50c654b50c55560dc70a724e7294fde270c29
+              creationTimestamp: null
+              labels:
+                name: istio-operator
+            spec:
+              containers:
+              - command:
+                - istio-operator
+                - --config
+                - /etc/operator/olm/config.properties
+                env:
+                - name: WATCH_NAMESPACE
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: istio-operator
+                image: registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:c9d21744d10e885f81d68d4cefd362d55cce3dfa49ffcfd9379ceb14957c0b8d
+                imagePullPolicy: Always
+                name: istio-operator
+                ports:
+                - containerPort: 11999
+                  name: validation
+                  protocol: TCP
+                - containerPort: 11200
+                  name: probes
+                  protocol: TCP
+                - containerPort: 60000
+                  name: metrics
+                  protocol: TCP
+                readinessProbe:
+                  httpGet:
+                    path: /readyz
+                    port: 11200
+                    scheme: HTTP
+                resources: {}
+                volumeMounts:
+                - mountPath: /etc/operator/olm
+                  name: operator-olm-config
+                  readOnly: true
+                - mountPath: /tmp/k8s-webhook-server/serving-certs
+                  name: webhook-tls-volume
+                  readOnly: true
+                - mountPath: /usr/local/share/istio-operator/templates/
+                  name: smcp-templates
+                  readOnly: true
+              serviceAccountName: istio-operator
+              volumes:
+              - downwardAPI:
+                  defaultMode: 420
+                  items:
+                  - fieldRef:
+                      fieldPath: metadata.annotations
+                    path: config.properties
+                name: operator-olm-config
+              - name: webhook-tls-volume
+                secret:
+                  optional: true
+                  secretName: maistra-operator-serving-cert
+              - configMap:
+                  name: smcp-templates
+                  optional: true
+                name: smcp-templates
+    strategy: deployment
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - istio
+  - maistra
+  - servicemesh
+  links:
+  - name: Red Hat OpenShift Service Mesh
+    url: https://docs.openshift.com/container-platform/latest/service_mesh/v2x/servicemesh-release-notes.html
+  - name: Istio
+    url: https://istio.io/
+  - name: Operator Source Code
+    url: https://github.com/Maistra/istio-operator
+  - name: Bugs
+    url: https://issues.redhat.com/projects/OSSM
+  maintainers:
+  - email: istio-feedback@redhat.com
+    name: Red Hat, OpenShift Service Mesh
+  maturity: alpha
+  provider:
+    name: Red Hat, Inc.
+  relatedImages:
+  - image: registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:c9d21744d10e885f81d68d4cefd362d55cce3dfa49ffcfd9379ceb14957c0b8d
+    name: istio-rhel8-operator-c9d21744d10e885f81d68d4cefd362d55cce3dfa49ffcfd9379ceb14957c0b8d-annotation
+  - image: registry.redhat.io/openshift-service-mesh/istio-rhel8-operator@sha256:c9d21744d10e885f81d68d4cefd362d55cce3dfa49ffcfd9379ceb14957c0b8d
+    name: istio-operator
+  - image: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:b27c5f61b22e57642b5e45c7acb50c654b50c55560dc70a724e7294fde270c29
+    name: ratelimit-rhel8-b27c5f61b22e57642b5e45c7acb50c654b50c55560dc70a724e7294fde270c29-annotation
+  - image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:d03f2bf8f5e7cba47102ba26ea0149ae6719076c645d5e451058392d6044b738
+    name: proxyv2-rhel8-d03f2bf8f5e7cba47102ba26ea0149ae6719076c645d5e451058392d6044b738-annotation
+  - image: registry.redhat.io/openshift4/ose-prometheus-config-reloader@sha256:ef50efa59c7a4d81bd88d07f9e2236ce931dfdff92efd045f465a8fa358d6ffb
+    name: ose-prometheus-config-reloader-ef50efa59c7a4d81bd88d07f9e2236ce931dfdff92efd045f465a8fa358d6ffb-annotation
+  - image: registry.redhat.io/openshift4/ose-prometheus@sha256:9316d9318a4e1e8163e6890c7ee8734a7a918ac0cfb99dda4a8b6ba0213c2f6d
+    name: ose-prometheus-9316d9318a4e1e8163e6890c7ee8734a7a918ac0cfb99dda4a8b6ba0213c2f6d-annotation
+  - image: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:affc93ad246c9d4c771df6b21e102cbaa51c76b458f1d1b8d6efcfabbda847b4
+    name: pilot-rhel8-affc93ad246c9d4c771df6b21e102cbaa51c76b458f1d1b8d6efcfabbda847b4-annotation
+  - image: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:b76c4d5b4cdfa1ccf323134733171f248446b2bd38d4be09e35c606b832efb56
+    name: grafana-rhel8-b76c4d5b4cdfa1ccf323134733171f248446b2bd38d4be09e35c606b832efb56-annotation
+  - image: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:b1b6b861aba9ab9aae070aa7653ea9d185096636916ad24b20da0417d6cd14d4
+    name: istio-cni-rhel8-b1b6b861aba9ab9aae070aa7653ea9d185096636916ad24b20da0417d6cd14d4-annotation
+  - image: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:186e2b8bcf97c22f82ca72e1a19057757ec4981f3dff0e61e2b61451fab86535
+    name: ratelimit-rhel8-186e2b8bcf97c22f82ca72e1a19057757ec4981f3dff0e61e2b61451fab86535-annotation
+  - image: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:f2fd8d5d4f5cce58723b644c3d2dbb0bfe5547c8c830809497df19223912ea69
+    name: pilot-rhel8-f2fd8d5d4f5cce58723b644c3d2dbb0bfe5547c8c830809497df19223912ea69-annotation
+  - image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:611d31a75558224131607e381db18e59d0d15263a817d056c891960c49476879
+    name: proxyv2-rhel8-611d31a75558224131607e381db18e59d0d15263a817d056c891960c49476879-annotation
+  - image: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:e4ce6de68835fa9426d42c05f45874300cb9bdb5c9e4a129dece52fa4c207317
+    name: prometheus-rhel8-e4ce6de68835fa9426d42c05f45874300cb9bdb5c9e4a129dece52fa4c207317-annotation
+  - image: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:7e76a2f7de543e260e94ae9396cfb55ed57ab4338d1b36db867b0760ce74acfd
+    name: grafana-rhel8-7e76a2f7de543e260e94ae9396cfb55ed57ab4338d1b36db867b0760ce74acfd-annotation
+  - image: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:ad1285ba536c602b8ee2f6e6c2aac49f2d9cfba2d3956ea10383e27024be7703
+    name: istio-cni-rhel8-ad1285ba536c602b8ee2f6e6c2aac49f2d9cfba2d3956ea10383e27024be7703-annotation
+  - image: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:996a71d56ed9a699816aed9281143df0ec45f22199c35d6f860c24e82f89ed3d
+    name: ratelimit-rhel8-996a71d56ed9a699816aed9281143df0ec45f22199c35d6f860c24e82f89ed3d-annotation
+  - image: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:565cd711b5f42075dd0dcc5fa65064c2f89d479dfe51dc3c4b71d86e37c59e78
+    name: pilot-rhel8-565cd711b5f42075dd0dcc5fa65064c2f89d479dfe51dc3c4b71d86e37c59e78-annotation
+  - image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:c37b6b7a6a08cfdf915ab9c498786df5f77ba633496ba9b8a702aeee2cdb51ab
+    name: proxyv2-rhel8-c37b6b7a6a08cfdf915ab9c498786df5f77ba633496ba9b8a702aeee2cdb51ab-annotation
+  - image: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:9edbb41786c9981386e06df0a415c848064bbaaadf3ebff4c1258b9854e43a39
+    name: prometheus-rhel8-9edbb41786c9981386e06df0a415c848064bbaaadf3ebff4c1258b9854e43a39-annotation
+  - image: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:aeb202fe0e8a96edcf6c4ca47173c4df1ddc4016c579257403233c839710d8e2
+    name: grafana-rhel8-aeb202fe0e8a96edcf6c4ca47173c4df1ddc4016c579257403233c839710d8e2-annotation
+  - image: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:606a5220d69040694f0183cc1bf760b61286f863a311ff2b773e8053d634ee3a
+    name: istio-cni-rhel8-606a5220d69040694f0183cc1bf760b61286f863a311ff2b773e8053d634ee3a-annotation
+  - image: registry.redhat.io/openshift-service-mesh/ratelimit-rhel8@sha256:f2c395c94dd63ab1aced5b1e3a220bc16326b0f516af933c30db57024cea2d7d
+    name: ratelimit-rhel8-f2c395c94dd63ab1aced5b1e3a220bc16326b0f516af933c30db57024cea2d7d-annotation
+  - image: registry.redhat.io/openshift-service-mesh/pilot-rhel8@sha256:b2a7d16998e501bac06b0f9cac94999a795be31895163e88423638ea1f638435
+    name: pilot-rhel8-b2a7d16998e501bac06b0f9cac94999a795be31895163e88423638ea1f638435-annotation
+  - image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:a9cb8adc2edfd4a42b64d2041ee58b1fd0068af0cd8cbbb0ef36a032725fd9c8
+    name: proxyv2-rhel8-a9cb8adc2edfd4a42b64d2041ee58b1fd0068af0cd8cbbb0ef36a032725fd9c8-annotation
+  - image: registry.redhat.io/openshift-service-mesh/prometheus-rhel8@sha256:841f8bad415843f9a579f509b8a4c2ed0f4fb56f1cea2a6b5b8704900761a42f
+    name: prometheus-rhel8-841f8bad415843f9a579f509b8a4c2ed0f4fb56f1cea2a6b5b8704900761a42f-annotation
+  - image: registry.redhat.io/openshift-service-mesh/grafana-rhel8@sha256:63cd675267e90bb02e13e57ce1b1ff3b3a21831281e1a6ecf3ad51cfe161c02c
+    name: grafana-rhel8-63cd675267e90bb02e13e57ce1b1ff3b3a21831281e1a6ecf3ad51cfe161c02c-annotation
+  - image: registry.redhat.io/openshift-service-mesh/istio-cni-rhel8@sha256:a9b51d0da38a7ae0423e74c4ed0c1dcc8140770ca34075944d73dea180f95418
+    name: istio-cni-rhel8-a9b51d0da38a7ae0423e74c4ed0c1dcc8140770ca34075944d73dea180f95418-annotation
+  replaces: servicemeshoperator.v2.4.3
+  version: 2.4.4-0
+status:
+  cleanup: {}
+  conditions:
+  - lastTransitionTime: "2024-06-26T15:46:46Z"
+    lastUpdateTime: "2024-06-26T15:46:46Z"
+    message: requirements not yet checked
+    phase: Pending
+    reason: RequirementsUnknown
+  - lastTransitionTime: "2024-06-26T15:46:46Z"
+    lastUpdateTime: "2024-06-26T15:46:46Z"
+    message: one or more requirements couldn't be found
+    phase: Pending
+    reason: RequirementsNotMet
+  - lastTransitionTime: "2024-06-26T15:46:46Z"
+    lastUpdateTime: "2024-06-26T15:46:46Z"
+    message: all requirements found, attempting install
+    phase: InstallReady
+    reason: AllRequirementsMet
+  - lastTransitionTime: "2024-06-26T15:46:47Z"
+    lastUpdateTime: "2024-06-26T15:46:47Z"
+    message: waiting for install components to report healthy
+    phase: Installing
+    reason: InstallSucceeded
+  - lastTransitionTime: "2024-06-26T15:46:47Z"
+    lastUpdateTime: "2024-06-26T15:46:47Z"
+    message: 'installing: waiting for deployment istio-operator to become ready: waiting
+      for spec update of deployment "istio-operator" to be observed...'
+    phase: Installing
+    reason: InstallWaiting
+  lastTransitionTime: "2024-06-26T15:46:47Z"
+  lastUpdateTime: "2024-06-26T15:46:47Z"
+  message: The operator is running in openshift-operators but is managing this namespace
+  phase: Installing
+  reason: Copied
+  requirementStatus:
+  - group: apiextensions.k8s.io
+    kind: CustomResourceDefinition
+    message: CRD is present and Established condition is true
+    name: servicemeshcontrolplanes.maistra.io
+    status: Present
+    uuid: 3a49b3f1-4e53-4461-8c03-fe925c37ef7d
+    version: v1
+  - group: apiextensions.k8s.io
+    kind: CustomResourceDefinition
+    message: CRD is present and Established condition is true
+    name: servicemeshmemberrolls.maistra.io
+    status: Present
+    uuid: ed53782d-0262-490b-b16d-77aa0475ce5c
+    version: v1
+  - group: apiextensions.k8s.io
+    kind: CustomResourceDefinition
+    message: CRD is present and Established condition is true
+    name: servicemeshmembers.maistra.io
+    status: Present
+    uuid: 0d1d43de-61a5-4390-b313-1aea04f0abf0
+    version: v1
+  - dependents:
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","create"],"apiGroups":["monitoring.coreos.com"],"resources":["servicemonitors"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":[""],"resources":["services/finalizers"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":[""],"resources":["configmaps","endpoints","namespaces","persistentvolumeclaims","pods","replicationcontrollers","secrets","serviceaccounts","services","events"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["apps","extensions"],"resources":["daemonsets","deployments","deployments/finalizers","ingresses","ingresses/status","replicasets","statefulsets"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["autoscaling"],"resources":["horizontalpodautoscalers"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["policy"],"resources":["poddisruptionbudgets"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["admissionregistration.k8s.io"],"resources":["mutatingwebhookconfigurations","validatingwebhookconfigurations"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["apiextensions.k8s.io"],"resources":["customresourcedefinitions"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["certmanager.k8s.io"],"resources":["clusterissuers"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["networking.k8s.io"],"resources":["networkpolicies","ingresses"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["rbac.authorization.k8s.io"],"resources":["clusterrolebindings","clusterroles","rolebindings","roles"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["authentication.istio.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["config.istio.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["networking.istio.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["rbac.istio.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["security.istio.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["jaegertracing.io"],"resources":["jaegers"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["kiali.io"],"resources":["kialis"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["maistra.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["authentication.maistra.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["rbac.maistra.io"],"resources":["*"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["*"],"apiGroups":["route.openshift.io"],"resources":["routes","routes/custom-host"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["create"],"apiGroups":["authorization.k8s.io"],"resources":["subjectaccessreviews"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","list","watch"],"apiGroups":["network.openshift.io"],"resources":["clusternetworks"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","list","watch"],"apiGroups":["config.openshift.io"],"resources":["networks"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","list","watch"],"apiGroups":["image.openshift.io"],"resources":["imagestreams"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","list","watch","update"],"apiGroups":["network.openshift.io"],"resources":["netnamespaces"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["create","delete","get","list","patch","watch"],"apiGroups":["k8s.cni.cncf.io"],"resources":["network-attachment-definitions"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["use"],"apiGroups":["security.openshift.io"],"resources":["securitycontextconstraints"],"resourceNames":["privileged"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get","list","watch"],"apiGroups":[""],"resources":["nodes","nodes/proxy"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["create"],"apiGroups":["authentication.k8s.io"],"resources":["tokenreviews"]}
+      status: Satisfied
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: PolicyRule
+      message: cluster rule:{"verbs":["get"],"nonResourceURLs":["/metrics"]}
+      status: Satisfied
+      version: v1
+    group: ""
+    kind: ServiceAccount
+    message: ""
+    name: istio-operator
+    status: Present
+    version: v1

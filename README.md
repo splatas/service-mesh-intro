@@ -21,9 +21,13 @@
 - OpenShift Elasticsearch
 
 
-3. Once all Operators are installed and ready, run the following command:
+3. Once all Operators are installed and ready, create a ServiceMeshControlPlane called **basic** in **'istio-system' namespace**. 
+
+
+Then run the following commands:
 
 ```
+oc new-project hello-world
 oc apply -f ./00.installation/istio-hello-world.yaml
 ```
 
@@ -36,6 +40,38 @@ You should see the following objects created:
 - A Service 'hello-world'
 - A Deployment 'hello-world'
 
+
+**Extra:**
+Deploy a test application (it will be sleeping endlessly) that includes curl command, just to test/add traffic from this app to hello-world app.
+This app will be outside the Mesh.
+
+```
+oc new-project sleep
+oc apply -f ./01.examples/00.sleep.yaml
+```
+
+The connect to sleep app, an run several curl commands:
+```
+oc get pod          (just to get the sleep app pod)
+
+oc rsh pod/<sleep-pod-name>
+```
+
+Once connected, run: *curl <ISTIO_INGRESSGATEWAY-URL>/<VIRTUAL_SERVICE_PREFIX>* (/hello-world)
+
+Example:
+```
+curl http://istio-ingressgateway-istio-system.apps.cluster-sjvqc.dynamic.redhatworkshops.io/hello-world
+
+```
+
+Then, test the curl command to svc hello-world; 
+```
+curl hello-world.hello-world
+``` 
+
+
+
 ## Uninstalling Service Mesh
 
 > **NOTE:** : This procedure assumes that the S.Mesh installation was performed in the recommended 'istio-system' namespace.
@@ -43,12 +79,13 @@ You should see the following objects created:
 Reference: https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/removing-ossm.html
 
 ### Removing the Service Mesh control plane using the CLI
+
 1. Log in to the OpenShift Container Platform CLI.
 
 2. Run this command to retrieve the name of the installed ServiceMeshControlPlane:
 
 ```
- oc get smcp -n istio-system
+oc get smcp -n istio-system
 ```
 
 3. Replace <name_of_custom_resource> with the output from the previous command, and run this command to remove the custom resource:
@@ -83,14 +120,19 @@ On the Operator Details page, select Uninstall Operator from the Actions menu. F
 - Red Hat OpenShift Service Mesh
 1. Delete the subscription: **oc get subscription -A** (to find all subscriptions)
 ```
-$ oc delete subscription servicemeshoperator -n openshift-operators
+oc delete subscription servicemeshoperator -n openshift-operators
+
 OUTPUT: subscription.operators.coreos.com "servicemeshoperator" deleted
 ```
+
 2. Delete the ClusterServiceVersion (CSV):
+
 To find it: oc get clusterserviceversion -n openshift-operators
 
 ```
-$ oc get clusterserviceversion -n openshift-operators
+oc get clusterserviceversion -n openshift-operators
+
+
 OUTPUT:
 NAME                            DISPLAY                                          VERSION    REPLACES                        PHASE
 elasticsearch-operator.v5.8.8   OpenShift Elasticsearch Operator                 5.8.8      elasticsearch-operator.v5.8.7   Succeeded
@@ -100,7 +142,8 @@ servicemeshoperator.v2.5.2      Red Hat OpenShift Service Mesh                  
 ```
 
 ```
-$ oc delete clusterserviceversion servicemeshoperator.v2.5.2 -n openshift-operators
+oc delete clusterserviceversion servicemeshoperator.v2.5.2 -n openshift-operators
+
 OUTPUT: clusterserviceversion.operators.coreos.com "servicemeshoperator.v2.5.2" deleted
 ```
 
@@ -108,10 +151,14 @@ The same for thes rest of Operators:
 
 - Kiali
 ```
-$ oc delete subscription kiali-ossm -n openshift-operators
+oc delete subscription kiali-ossm -n openshift-operators
+
+OUTPUT:
 subscription.operators.coreos.com "kiali-ossm" deleted
 
-$ oc delete clusterserviceversion kiali-operator.v1.73.8 -n openshift-operators
+
+oc delete clusterserviceversion kiali-operator.v1.73.8 -n openshift-operators
+
 OUTPUT: clusterserviceversion.operators.coreos.com "kiali-operator.v1.73.8" deleted
 ```
 
@@ -120,20 +167,29 @@ OUTPUT: clusterserviceversion.operators.coreos.com "kiali-operator.v1.73.8" dele
 > **NOTE:** : Pay attention on namespace 'openshift-distributed-tracing'
 
 ```
-$ oc delete subscription jaeger-product -n openshift-distributed-tracing
-OUTPUT: subscription.operators.coreos.com "jaeger-product" deleted
+oc delete subscription jaeger-product -n openshift-distributed-tracing
 
-$ oc delete clusterserviceversion jaeger-operator.v1.57.0-6 -n openshift-distributed-tracing
-OUTPUT: clusterserviceversion.operators.coreos.com "jaeger-operator.v1.57.0-6" deleted
+OUTPUT: 
+subscription.operators.coreos.com "jaeger-product" deleted
+
+
+oc delete clusterserviceversion jaeger-operator.v1.57.0-6 -n openshift-distributed-tracing
+
+OUTPUT: 
+clusterserviceversion.operators.coreos.com "jaeger-operator.v1.57.0-6" deleted
 ```
 
 - OpenShift Elasticsearch
 ```
 oc delete subscription elasticsearch-operator -n openshift-operators-redhat
+
+OUTPUT: 
 subscription.operators.coreos.com "elasticsearch-operator" deleted
 
 oc delete clusterserviceversion elasticsearch-operator.v5.8.8 -n openshift-operators-redhat
-OUTPUT: clusterserviceversion.operators.coreos.com "elasticsearch-operator.v5.8.8" deleted
+
+OUTPUT: 
+clusterserviceversion.operators.coreos.com "elasticsearch-operator.v5.8.8" deleted
 ```
 
 ### Clean up Operator resources

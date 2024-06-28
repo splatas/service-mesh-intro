@@ -1,0 +1,86 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  creationTimestamp: "2024-06-26T15:42:18Z"
+  generation: 1
+  labels:
+    operators.coreos.com/servicemeshoperator.openshift-operators: ""
+  name: servicemeshoperator
+  namespace: openshift-operators
+  resourceVersion: "184260"
+  uid: f9537232-e3ee-4b7e-b26d-7309c78da84b
+spec:
+  channel: stable
+  installPlanApproval: Manual
+  name: servicemeshoperator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: servicemeshoperator.v2.4.4
+status:
+  catalogHealth:
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: certified-operators
+      namespace: openshift-marketplace
+      resourceVersion: "177490"
+      uid: 876c9e98-a581-4a9c-86df-495bbc01226f
+    healthy: true
+    lastUpdated: "2024-06-26T15:43:40Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: community-operators
+      namespace: openshift-marketplace
+      resourceVersion: "177469"
+      uid: 11c892df-87ea-41a2-ad32-d6a2d6d1b916
+    healthy: true
+    lastUpdated: "2024-06-26T15:43:40Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: redhat-marketplace
+      namespace: openshift-marketplace
+      resourceVersion: "181374"
+      uid: a5624a2c-a56a-4970-ab12-64658193488b
+    healthy: true
+    lastUpdated: "2024-06-26T15:43:40Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: redhat-operators
+      namespace: openshift-marketplace
+      resourceVersion: "179769"
+      uid: e16fae6b-fbd1-404c-a7a2-27dd0650aea5
+    healthy: true
+    lastUpdated: "2024-06-26T15:43:40Z"
+  conditions:
+  - lastTransitionTime: "2024-06-26T15:43:40Z"
+    message: all available catalogsources are healthy
+    reason: AllCatalogSourcesHealthy
+    status: "False"
+    type: CatalogSourcesUnhealthy
+  - reason: UnpackingInProgress
+    status: "True"
+    type: BundleUnpacking
+  - lastTransitionTime: "2024-06-26T15:43:40Z"
+    reason: RequiresApproval
+    status: "True"
+    type: InstallPlanPending
+  currentCSV: servicemeshoperator.v2.5.2
+  installPlanGeneration: 2
+  installPlanRef:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-lgbmw
+    namespace: openshift-operators
+    resourceVersion: "184217"
+    uid: fc4a514b-d28a-45ad-879c-973a4baa239a
+  installedCSV: servicemeshoperator.v2.4.4
+  installplan:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-lgbmw
+    uuid: fc4a514b-d28a-45ad-879c-973a4baa239a
+  lastUpdated: "2024-06-26T15:46:47Z"
+  state: UpgradePending
